@@ -9,24 +9,25 @@ import {
 } from 'react-native';
 
 import React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function LoginApp() {
+export default function LoginApp(props: any) {
   const [email, setEmail] = React.useState<String>('');
   const [password, setPassword] = React.useState<String>('');
-  const [matchPassword, setMatchPassword] = React.useState<String>('');
   const [error, setError] = React.useState<String>('');
 
-  const handleSubmit = () => {
-    console.log(email);
-    console.log(password);
-    console.log(matchPassword);
-    if (password !== matchPassword) {
-      setError('Passwords not matched.');
+  const handleSubmit = async () => {
+    let rUserValue = await AsyncStorage.getItem('REGISTERED_USER');
+    let registeredUser = !!rUserValue ? JSON.parse(rUserValue) : null;
+    if (!registeredUser) return setError('User not found.');
+    if (
+      password !== registeredUser.password ||
+      email !== registeredUser.email
+    ) {
+      return setError('Email or Password Wrong.');
     }
-    if (email.length < 12) {
-      setError('Email should be minimum 12 characters.');
-    }
-    console.log('Submitting');
+
+    props.navigation.navigate('Pokemons');
   };
   const clearError = () => {
     setError('');
@@ -52,16 +53,6 @@ export default function LoginApp() {
           setPassword(text);
         }}
       />
-      <TextInput
-        placeholder="Match Password"
-        style={styles.input}
-        secureTextEntry
-        onChangeText={text => {
-          clearError();
-          setMatchPassword(text);
-        }}
-      />
-
       {error && <Text style={styles.errorTextStyle}>{error}</Text>}
       <View style={styles.buttonContainer}>
         <Button color="blue" title="Submit" onPress={handleSubmit} />
