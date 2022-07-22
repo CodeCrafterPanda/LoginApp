@@ -10,12 +10,12 @@ import {
   StackedBarChart,
 } from 'react-native-chart-kit';
 import {Dimensions} from 'react-native';
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get('window').width - 30;
 const screenHeight = Dimensions.get('window').height;
 const chartConfig = {
   backgroundGradientFrom: 'white',
   backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: 'grey',
+  backgroundGradientTo: 'white',
   backgroundGradientToOpacity: 0.5,
   color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
   strokeWidth: 1, // optional, default 3
@@ -23,10 +23,6 @@ const chartConfig = {
   useShadowColorFromDataset: false, // optional
 };
 
-// const data = {
-//   labels: ['Swim', 'Bike', 'Run'], // optional
-//   data: [0.4, 0.6, 0.8],
-// };
 export default function PokemonDetails(props: any) {
   const {url} = props.route.params;
   const [pokemonDetails, setPokemonDetails] = React.useState<any>(null);
@@ -36,12 +32,12 @@ export default function PokemonDetails(props: any) {
       let labels: string[] = [];
       let data: number[] = [];
       res.data.stats.forEach((el: any) => {
-        // console.log(res.data.stats);
         labels.push(el?.stat?.name);
         data.push(el?.base_stat / 100);
       });
-
-      // setPokemonDetails(res.data);
+      props.navigation.setOptions({
+        title: res.data.name.toUpperCase(),
+      });
       let newStats: any = {labels, data};
       console.log(newStats);
       setStatsData(newStats);
@@ -49,15 +45,21 @@ export default function PokemonDetails(props: any) {
     });
   }, [url]);
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      {/* <Text style={{fontSize: 20}}>
-        Name : {pokemonDetails?.name}
-        {JSON.stringify(pokemonDetails?.stats)}
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+      }}>
+      <Text style={{fontSize: 20}}>
+        Name : {pokemonDetails?.name.toUpperCase()}
       </Text>
       <Image
-        source={pokemonDetails?.sprites?.front_default}
-        style={{height: 100, width: 100}}
-      /> */}
+        source={{uri: pokemonDetails?.sprites?.front_default}}
+        style={{width: 200, height: 200}}
+        resizeMode="contain"
+      />
       {!!pokemonDetails && (
         <ProgressChart
           data={statsData}

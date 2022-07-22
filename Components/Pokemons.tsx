@@ -38,7 +38,7 @@ const Charts = (props: any) => {
         })
       }>
       <Text style={styles.title}>{name}</Text>
-      <Text style={styles.title}>{url}</Text>
+      {/* <Text style={styles.title}>{url}</Text> */}
     </TouchableOpacity>
   );
 
